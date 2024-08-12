@@ -1,59 +1,137 @@
-# `AgriLink`
+---
 
-Welcome to your new `AgriLink` project and to the Internet Computer development community. By default, creating a new project adds this README and some template files to your project directory. You can edit these template files to customize your project and to include your own code to speed up the development cycle.
+# AgriLink
 
-To get started, you might want to explore the project directory structure and the default configuration file. Working with this project in your development environment will not affect any production deployment or identity tokens.
+**AgriLink** is a Web3-based platform designed to revolutionize agriculture in Africa by connecting farmers, landowners, and investors. By leveraging blockchain technology, AgriLink facilitates crowdfunding, land pooling, and investment opportunities, all within a secure and transparent ecosystem.
 
-To learn more before you start working with `AgriLink`, see the following documentation available online:
+## Table of Contents
 
-- [Quick Start](https://internetcomputer.org/docs/current/developer-docs/setup/deploy-locally)
-- [SDK Developer Tools](https://internetcomputer.org/docs/current/developer-docs/setup/install)
-- [Motoko Programming Language Guide](https://internetcomputer.org/docs/current/motoko/main/motoko)
-- [Motoko Language Quick Reference](https://internetcomputer.org/docs/current/motoko/main/language-manual)
+1. [Project Overview](#project-overview)
+2. [Key Features](#key-features)
+3. [Technology Stack](#technology-stack)
+4. [Installation](#installation)
+5. [Usage](#usage)
+6. [Contributing](#contributing)
+7. [Roadmap](#roadmap)
+8. [License](#license)
+9. [Contact](#contact)
 
-If you want to start working on your project right away, you might want to try the following commands:
+## Project Overview
 
-```bash
-cd AgriLink/
-dfx help
-dfx canister --help
-```
+Agriculture is a cornerstone of many African economies, yet farmers often face challenges such as limited access to capital, fragmented land ownership, and a lack of investment opportunities. AgriLink addresses these issues by providing a decentralized platform where:
 
-## Running the project locally
+- **Farmers** can raise funds and access pooled land resources.
+- **Landowners** can contribute land for larger-scale farming projects.
+- **Investors** can discover and fund agricultural projects, with all transactions managed securely through smart contracts.
 
-If you want to test your project locally, you can use the following commands:
+## Key Features
 
-```bash
-# Starts the replica, running in the background
-dfx start --background
+- **Crowdfunding**: Farmers can raise capital for their projects by appealing to a global network of investors.
+- **Land Pooling**: Facilitates the collaboration of landowners to create larger, more efficient farming operations.
+- **Investment Opportunities**: Investors can diversify their portfolios by investing in a range of agricultural projects, with transparent ROI tracking.
+- **Blockchain Security**: All transactions and agreements are secured and executed on the blockchain, ensuring transparency and trust.
+- **Sustainable Practices**: Promotes eco-friendly and sustainable farming methods to ensure long-term viability and environmental protection.
 
-# Deploys your canisters to the replica and generates your candid interface
-dfx deploy
-```
+## Technology Stack
 
-Once the job completes, your application will be available at `http://localhost:4943?canisterId={asset_canister_id}`.
+- **Frontend**: 
+  - React
+  - Kotlin (for mobile app)
+- **Backend**: 
+  - Motoko (for smart contracts and data management on the Internet Computer)
+- **Blockchain**: 
+  - Internet Computer (ICP) for decentralized infrastructure
+- **APIs**: 
+  - Integration with payment gateways for Mobile Money, bank cards, and cryptocurrencies.
+- **Testing & Deployment**: 
+  - Vessel (for Motoko testing)
+  - DFX (for deployment on the Internet Computer)
 
-If you have made changes to your backend canister, you can generate a new candid interface with
+## Installation
 
-```bash
-npm run generate
-```
+To get started with AgriLink, follow these steps:
 
-at any time. This is recommended before starting the frontend development server, and will be run automatically any time you run `dfx deploy`.
+### Prerequisites
 
-If you are making frontend changes, you can start a development server with
+- **Node.js** and **npm/yarn** installed
+- **DFX** (Dfinity SDK) installed
 
-```bash
-npm start
-```
+### Backend Setup
 
-Which will start a server at `http://localhost:8080`, proxying API requests to the replica at port 4943.
+1. Clone the repository:
 
-### Note on frontend environment variables
+    ```bash
+    git clone https://github.com/Tanshi-Digital-Solutions/AgriLink.git
+    cd agrilink/backend
+    ```
 
-If you are hosting frontend code somewhere without using DFX, you may need to make one of the following adjustments to ensure your project does not fetch the root key in production:
+2. Start the local Internet Computer:
 
-- set`DFX_NETWORK` to `ic` if you are using Webpack
-- use your own preferred method to replace `process.env.DFX_NETWORK` in the autogenerated declarations
-  - Setting `canisters -> {asset_canister_id} -> declarations -> env_override to a string` in `dfx.json` will replace `process.env.DFX_NETWORK` with the string in the autogenerated declarations
-- Write your own `createActor` constructor
+    ```bash
+    dfx start
+    ```
+
+3. Deploy the Motoko canisters:
+
+    ```bash
+    dfx deploy
+    ```
+
+### Frontend Setup
+
+1. Navigate to the frontend directory:
+
+    ```bash
+    cd ../frontend
+    ```
+
+2. Install dependencies:
+
+    ```bash
+    npm install
+    ```
+
+3. Start the development server:
+
+    ```bash
+    npm start
+    ```
+
+## Usage
+
+Once the backend and frontend are running, you can access the AgriLink platform by navigating to `http://localhost:3000` in your web browser.
+
+### User Flows
+
+1. **Registration**: Users can register as farmers, landowners, or investors.
+2. **Project Creation**: Farmers can create and list their agricultural projects for crowdfunding.
+3. **Investment**: Investors can browse projects and invest in those that align with their interests.
+4. **Land Pooling**: Landowners can offer their land for pooling, which farmers can then use for larger-scale operations.
+
+## Contributing
+
+We welcome contributions to AgriLink! To get involved:
+
+1. Fork the repository.
+2. Create a new branch (`git checkout -b feature/your-feature-name`).
+3. Commit your changes (`git commit -m 'Add some feature'`).
+4. Push to the branch (`git push origin feature/your-feature-name`).
+5. Open a Pull Request.
+
+Please ensure your code adheres to our [Code of Conduct](CODE_OF_CONDUCT.md) and is well-documented.
+
+## Roadmap
+
+- **Phase 1**: MVP development with core features (Crowdfunding, Land Pooling).
+- **Phase 2**: Integration of payment gateways and smart contract auditing.
+- **Phase 3**: Mobile app development and multi-language support.
+- **Phase 4**: Expansion to other regions and advanced data analytics.
+
+
+
+## Contact
+
+For any inquiries or support, please reach out to us at [tanshidigitaksolutions@gmail.com](mailto:tanshidigitaksolutions@gmail.com).
+
+---
+
