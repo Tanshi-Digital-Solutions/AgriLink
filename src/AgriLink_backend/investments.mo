@@ -1,4 +1,4 @@
-// investment.mo
+// investments.mo
 import Principal "mo:base/Principal";
 import Result "mo:base/Result";
 import TrieMap "mo:base/TrieMap";
@@ -24,18 +24,14 @@ module {
         private var investmentMap = TrieMap.TrieMap<Text, Types.Investment>(Text.equal, Text.hash);
         private var nextInvestmentId : Nat = 0;
 
-        
-
-        
-
         // Make an investment in a project
-        public shared(msg) func invest(data: InvestmentData) : async Result.Result<Text, Text> {
+        public func invest(caller: Principal, data: InvestmentData) : Result.Result<Text, Text> {
             let investmentId = "inv_" # Nat.toText(nextInvestmentId);
             nextInvestmentId += 1;
 
             let newInvestment : Types.Investment = {
                 id = investmentId;
-                investor = msg.caller;
+                investor = caller;
                 amount = data.amount;
                 timestamp = Time.now();
                 projectId = data.projectId;
@@ -46,7 +42,7 @@ module {
         };
 
         // Get details of a specific investment
-        public query func getInvestment(investmentId: Text) : async Result.Result<Types.Investment, Text> {
+        public func getInvestment(investmentId: Text) : Result.Result<Types.Investment, Text> {
             switch (investmentMap.get(investmentId)) {
                 case (?investment) { #ok(investment) };
                 case null { #err("Investment not found") };
@@ -54,23 +50,22 @@ module {
         };
 
         // Get all investments for a specific project
-        public query func getProjectInvestments(projectId: Text) : async [Types.Investment] {
+        public func getProjectInvestments(projectId: Text) : [Types.Investment] {
             Iter.toArray(Iter.filter(investmentMap.vals(), func (investment: Types.Investment) : Bool {
-                // Assuming we add a projectId field to the Investment type in types.mo
                 investment.projectId == projectId
             }))
         };
 
         // Get all investments made by a specific user
-        public query func getUserInvestments(userId: Principal) : async [Types.Investment] {
+        public func getUserInvestments(userId: Principal) : [Types.Investment] {
             Iter.toArray(Iter.filter(investmentMap.vals(), func (investment: Types.Investment) : Bool {
                 investment.investor == userId
             }))
         };
 
         // Distribute profits for a project
-        public func distributeProfits(projectId: Text, totalProfit: Nat) : async Result.Result<ProfitDistribution, Text> {
-            let projectInvestments = await getProjectInvestments(projectId);
+        public func distributeProfits(projectId: Text, totalProfit: Nat) : Result.Result<ProfitDistribution, Text> {
+            let projectInvestments = getProjectInvestments(projectId);
             let totalInvestment = Array.foldLeft<Types.Investment, Nat>(projectInvestments, 0, func (acc, inv) { acc + inv.amount });
 
             if (totalInvestment == 0) {
@@ -83,9 +78,6 @@ module {
             let investorProfit = Float.toInt(investorShare);
             let farmerProfit = Float.toInt(farmerShare);
 
-            // Here you would implement the logic to transfer the profits to the respective parties
-            // This might involve interacting with other modules like Users or Projects
-
             let distribution : ProfitDistribution = {
                 investorProfit = investorProfit;
                 farmerProfit = farmerProfit;
@@ -95,8 +87,8 @@ module {
         };
 
         // Return capital to investors (e.g., when a project is completed or cancelled)
-        public func returnCapital(projectId: Text) : async Result.Result<Text, Text> {
-            let projectInvestments = await getProjectInvestments(projectId);
+        public func returnCapital(projectId: Text) : Result.Result<Text, Text> {
+            let projectInvestments = getProjectInvestments(projectId);
 
             for (investment in projectInvestments.vals()) {
                 // Here you would implement the logic to return the investment amount to each investor
@@ -107,8 +99,8 @@ module {
         };
 
         // Calculate total investment for a project
-        public func calculateTotalInvestment(projectId: Text) : async Nat {
-            let projectInvestments = await getProjectInvestments(projectId);
+        public func calculateTotalInvestment(projectId: Text) : Nat {
+            let projectInvestments = getProjectInvestments(projectId);
             Array.foldLeft<Types.Investment, Nat>(projectInvestments, 0, func (acc, inv) { acc + inv.amount })
         };
 

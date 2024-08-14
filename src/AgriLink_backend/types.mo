@@ -83,7 +83,6 @@ module {
     comments: [Comment];
     timestamp: Time.Time;
   };
-
   public type Comment = {
     id: Text;
     author: Principal;

@@ -1,4 +1,3 @@
-//project.mo
 import Principal "mo:base/Principal";
 import Result "mo:base/Result";
 import TrieMap "mo:base/TrieMap";
@@ -11,40 +10,35 @@ import Int "mo:base/Int";
 import Types "types";
 
 module {
-
     public type UpdateProjectData = {
-            name : ?Text;
-            description : ?Text;
-            fundingGoal : ?Nat;
-            startDate : ?Time.Time;
-            endDate : ?Time.Time;
-            status : ?Types.ProjectStatus;
-        };
+        name : ?Text;
+        description : ?Text;
+        fundingGoal : ?Nat;
+        startDate : ?Time.Time;
+        endDate : ?Time.Time;
+        status : ?Types.ProjectStatus;
+    };
 
-        // Define a sharable project type
-        public type ShareableProject = {
-            id : Text;
-            name : Text;
-            description : Text;
-            owner : Principal;
-            fundingGoal : Nat;
-            currentFunding : Nat;
-            startDate : Time.Time;
-            endDate : Time.Time;
-            status : Types.ProjectStatus;
-            updates : [Types.ProjectUpdate];
-            investors : [Types.Investment];
-        };
+    public type ShareableProject = {
+        id : Text;
+        name : Text;
+        description : Text;
+        owner : Principal;
+        fundingGoal : Nat;
+        currentFunding : Nat;
+        startDate : Time.Time;
+        endDate : Time.Time;
+        status : Types.ProjectStatus;
+        updates : [Types.ProjectUpdate];
+        investors : [Types.Investment];
+    };
+
     public class Projects() {
         private var projectMap = TrieMap.TrieMap<Text, Types.Project>(Text.equal, Text.hash);
         private var nextProjectId : Nat = 0;
 
-        // Type for updating project data
-        
-
-        // Create a new project
-        public shared(msg) func createProject(name: Text, description: Text, fundingGoal: Nat, startDate: Time.Time, endDate: Time.Time) : async Result.Result<Text, Text> {
-            let owner = msg.caller;
+        public func createProject(caller: Principal, name: Text, description: Text, fundingGoal: Nat, startDate: Time.Time, endDate: Time.Time) : Result.Result<Text, Text> {
+            let owner = caller;
             let projectId = "proj_" # Nat.toText(nextProjectId);
             nextProjectId += 1;
 
@@ -66,8 +60,7 @@ module {
             #ok("Project created successfully with ID: " # projectId)
         };
 
-        // Get details of a specific project
-        public shared(msg) func getProject(projectId: Text) : async Result.Result<ShareableProject, Text> {
+        public func getProject(projectId: Text) : Result.Result<ShareableProject, Text> {
             switch (projectMap.get(projectId)) {
                 case (?project) {
                     let shareableProject : ShareableProject = {
@@ -86,14 +79,13 @@ module {
                     #ok(shareableProject)
                 };
                 case null { #err("Project not found") };
-            };
+            }
         };
 
-        // Update project details
-        public shared(msg) func updateProject(projectId: Text, data: UpdateProjectData) : async Result.Result<Text, Text> {
+        public func updateProject(caller: Principal, projectId: Text, data: UpdateProjectData) : Result.Result<Text, Text> {
             switch (projectMap.get(projectId)) {
                 case (?project) {
-                    if (project.owner != msg.caller) {
+                    if (project.owner != caller) {
                         #err("You are not the owner of this project")
                     } else {
                         project.name := switch (data.name) { case (?n) { n }; case null { project.name } };
@@ -107,14 +99,13 @@ module {
                     }
                 };
                 case null { #err("Project not found") };
-            };
+            }
         };
 
-        // Add a project update
-        public shared(msg) func addProjectUpdate(projectId: Text, content: Text) : async Result.Result<Text, Text> {
+        public func addProjectUpdate(caller: Principal, projectId: Text, content: Text) : Result.Result<Text, Text> {
             switch (projectMap.get(projectId)) {
                 case (?project) {
-                    if (project.owner != msg.caller) {
+                    if (project.owner != caller) {
                         #err("You are not the owner of this project")
                     } else {
                         let newUpdate : Types.ProjectUpdate = {
@@ -128,14 +119,13 @@ module {
                     }
                 };
                 case null { #err("Project not found") };
-            };
+            }
         };
 
-        // Fund a project
-        public shared(msg) func fundProject(projectId: Text, amount: Nat) : async Result.Result<Nat, Text> {
+        public func fundProject(caller: Principal, projectId: Text, amount: Nat) : Result.Result<Nat, Text> {
             switch (projectMap.get(projectId)) {
                 case (?project) {
-                    let investor = msg.caller;
+                    let investor = caller;
                     project.currentFunding += amount;
 
                     let newInvestment : Types.Investment = {
@@ -151,11 +141,10 @@ module {
                     #ok(project.currentFunding)
                 };
                 case null { #err("Project not found") };
-            };
+            }
         };
 
-        // Get all projects
-        public query func getAllProjects() : async [ShareableProject] {
+        public func getAllProjects() : [ShareableProject] {
             Iter.toArray(Iter.map(projectMap.vals(), func (project: Types.Project) : ShareableProject {
                 {
                     id = project.id;
@@ -173,12 +162,11 @@ module {
             }))
         };
 
-        // Get all projects owned by a specific user
-        public query func getUserProjects(userId: Principal) : async [ShareableProject] {
+        public func getUserProjects(userId: Principal) : [ShareableProject] {
             Array.map(
-            Array.filter(Iter.toArray(projectMap.vals()), func (project: Types.Project) : Bool {
-                project.owner == userId
-            }),
+                Array.filter(Iter.toArray(projectMap.vals()), func (project: Types.Project) : Bool {
+                    project.owner == userId
+                }),
                 func (project: Types.Project) : ShareableProject {
                     {
                         id = project.id;
