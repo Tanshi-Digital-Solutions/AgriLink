@@ -8,6 +8,12 @@ import Iter "mo:base/Iter";
 import Types "types";
 
 module {
+    public type UpdateUserData = {
+            name : ?Text;
+            email : ?Text;
+            bio : ?Text;
+            profileImage : ?Text;
+        };
     public class Users() {
         private var userMap = TrieMap.TrieMap<Principal, Types.User>(Principal.equal, Principal.hash);
 
@@ -16,21 +22,6 @@ module {
             email : ?Text;
             bio : ?Text;
             profileImage : ?Text;
-        };
-
-        // Sharable user type that doesn't include mutable fields
-        public type ShareableUser = {
-            id : Principal;
-            name : Text;
-            email : Text;
-            accountBalance : Nat;
-            createdAt : Time.Time;
-            updatedAt : Time.Time;
-            bio : Text;
-            profileImage : ?Text;
-            role : Types.UserRole;
-            investments: ?[Text];
-            landNFTs: ?[Text];
         };
 
         public shared(msg) func createUser(name: Text, email: Text, role: Types.UserRole) : async Result.Result<Text, Text> {
@@ -57,22 +48,10 @@ module {
             };
         };
 
-        public shared(msg) func getUser() : async Result.Result<ShareableUser, Text> {
+        public shared(msg) func getUser() : async Result.Result<Types.ShareableUser, Text> {
             switch (userMap.get(msg.caller)) {
                 case (?user) { 
-                    #ok({
-                        id = user.id;
-                        name = user.name;
-                        email = user.email;
-                        accountBalance = user.accountBalance;
-                        createdAt = user.createdAt;
-                        updatedAt = user.updatedAt;
-                        bio = user.bio;
-                        profileImage = user.profileImage;
-                        role = user.role;
-                        investments = user.investments;
-                        landNFTs = user.landNFTs;
-                    })
+                    #ok(toShareableUser(user))
                 };
                 case null { #err("User not found") };
             };
@@ -128,41 +107,14 @@ module {
             };
         };
 
-        public query func getAllUsers() : async [ShareableUser] {
-            Iter.toArray(Iter.map(userMap.vals(), func (user: Types.User) : ShareableUser {
-                {
-                    id = user.id;
-                    name = user.name;
-                    email = user.email;
-                    accountBalance = user.accountBalance;
-                    createdAt = user.createdAt;
-                    updatedAt = user.updatedAt;
-                    bio = user.bio;
-                    profileImage = user.profileImage;
-                    role = user.role;
-                    investments = user.investments;
-                    landNFTs = user.landNFTs;
-                }
-            }))
+        public query func getAllUsers() : async [Types.ShareableUser] {
+            Iter.toArray(Iter.map(userMap.vals(), toShareableUser))
         };
 
-        public shared(msg) func loginWithII() : async Result.Result<ShareableUser, Text> {
+        public shared(msg) func loginWithII() : async Result.Result<Types.ShareableUser, Text> {
             switch (userMap.get(msg.caller)) {
                 case (?user) {
-                    #ok({
-                        id = user.id;
-                        name = user.name;
-                        email = user.email;
-                        accountBalance = user.accountBalance;
-                        createdAt = user.createdAt;
-                        updatedAt = user.updatedAt;
-                        bio = user.bio;
-                        profileImage = user.profileImage;
-                        role = user.role;
-                        investments = user.investments;
-                        landNFTs = user.landNFTs;
-
-                    })
+                    #ok(toShareableUser(user))
                 };
                 case null {
                     #err("User not found. Please create an account first.")
@@ -170,14 +122,30 @@ module {
             };
         };
 
+        private func toShareableUser(user: Types.User) : Types.ShareableUser {
+            {
+                id = user.id;
+                name = user.name;
+                email = user.email;
+                accountBalance = user.accountBalance;
+                createdAt = user.createdAt;
+                updatedAt = user.updatedAt;
+                bio = user.bio;
+                profileImage = user.profileImage;
+                role = user.role;
+                investments = user.investments;
+                landNFTs = user.landNFTs;
+            }
+        };
+
         // For upgrade persistence
         var userEntries : [(Principal, Types.User)] = [];
 
-        private func preupgrade() {
+        public func preupgrade() {
             userEntries := Iter.toArray(userMap.entries());
         };
 
-        private func postupgrade() {
+        public func postupgrade() {
             userMap := TrieMap.fromEntries(userEntries.vals(), Principal.equal, Principal.hash);
         };
     };

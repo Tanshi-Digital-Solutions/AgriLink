@@ -1,4 +1,4 @@
-// land.mo
+// land.mo NFT
 import Principal "mo:base/Principal";
 import Result "mo:base/Result";
 import TrieMap "mo:base/TrieMap";
@@ -10,11 +10,8 @@ import Array "mo:base/Array";
 import Types "types";
 
 module {
-    public class LandNFTs() {
-        private var nftMap = TrieMap.TrieMap<Text, Types.LandParcel>(Text.equal, Text.hash);
-        private var nextNftId : Nat = 0;
 
-        public type CreateLandNFTData = {
+    public type CreateLandNFTData = {
             owner : Principal;
             location : Types.Location;
             size : Nat;
@@ -26,6 +23,11 @@ module {
             size : ?Nat;
             status : ?Types.LandStatus;
         };
+    public class LandNFTs() {
+        private var nftMap = TrieMap.TrieMap<Text, Types.LandParcel>(Text.equal, Text.hash);
+        private var nextNftId : Nat = 0;
+
+        
 
         // Create a new LandNFT
         public func createLandNFT(data: CreateLandNFTData) : async Result.Result<Text, Text> {
@@ -45,7 +47,7 @@ module {
         };
 
         // Get details of a specific LandNFT
-        public query func getLandNFT(nftId: Text) : async Result.Result<Types.LandParcel, Text> {
+        public   func getLandNFT(nftId: Text) : async Result.Result<Types.LandParcel, Text> {
             switch (nftMap.get(nftId)) {
                 case (?landNFT) { #ok(landNFT) };
                 case null { #err("LandNFT not found") };

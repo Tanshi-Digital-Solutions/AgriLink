@@ -1,3 +1,4 @@
+//project.mo
 import Principal "mo:base/Principal";
 import Result "mo:base/Result";
 import TrieMap "mo:base/TrieMap";
@@ -10,12 +11,8 @@ import Int "mo:base/Int";
 import Types "types";
 
 module {
-    public class Projects() {
-        private var projectMap = TrieMap.TrieMap<Text, Types.Project>(Text.equal, Text.hash);
-        private var nextProjectId : Nat = 0;
 
-        // Type for updating project data
-        public type UpdateProjectData = {
+    public type UpdateProjectData = {
             name : ?Text;
             description : ?Text;
             fundingGoal : ?Nat;
@@ -38,6 +35,12 @@ module {
             updates : [Types.ProjectUpdate];
             investors : [Types.Investment];
         };
+    public class Projects() {
+        private var projectMap = TrieMap.TrieMap<Text, Types.Project>(Text.equal, Text.hash);
+        private var nextProjectId : Nat = 0;
+
+        // Type for updating project data
+        
 
         // Create a new project
         public shared(msg) func createProject(name: Text, description: Text, fundingGoal: Nat, startDate: Time.Time, endDate: Time.Time) : async Result.Result<Text, Text> {
@@ -197,11 +200,11 @@ module {
         // For upgrade persistence
         var projectEntries : [(Text, Types.Project)] = [];
 
-        private func preupgrade() {
+        public func preupgrade() {
             projectEntries := Iter.toArray(projectMap.entries());
         };
 
-        private func postupgrade() {
+        public func postupgrade() {
             projectMap := TrieMap.fromEntries(projectEntries.vals(), Text.equal, Text.hash);
         };
     };

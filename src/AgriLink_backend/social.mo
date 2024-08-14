@@ -10,11 +10,8 @@ import Nat "mo:base/Nat";
 import Types "types";
 
 module {
-    public class Social() {
-        private var postMap = TrieMap.TrieMap<Text, Types.Post>(Text.equal, Text.hash);
-        private var nextPostId : Nat = 0;
 
-        public type CreatePostData = {
+    public type CreatePostData = {
             content : Text;
             projectId : ?Text;
         };
@@ -23,6 +20,11 @@ module {
             postId : Text;
             content : Text;
         };
+    public class Social() {
+        private var postMap = TrieMap.TrieMap<Text, Types.Post>(Text.equal, Text.hash);
+        private var nextPostId : Nat = 0;
+
+        
 
         // Create a new post
         public shared(msg) func createPost(data: CreatePostData) : async Result.Result<Text, Text> {

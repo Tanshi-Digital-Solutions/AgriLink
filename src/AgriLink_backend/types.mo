@@ -17,6 +17,20 @@ module {
     var landNFTs: ?[Text];
   };
 
+  public type ShareableUser = {
+    id : Principal;
+    name : Text;
+    email : Text;
+    accountBalance : Nat;
+    createdAt : Time.Time;
+    updatedAt : Time.Time;
+    bio : Text;
+    profileImage : ?Text;
+    role : UserRole;
+    investments: ?[Text];
+    landNFTs: ?[Text];
+  };
+
   public type UserRole = {
     #Farmer;
     #Investor;

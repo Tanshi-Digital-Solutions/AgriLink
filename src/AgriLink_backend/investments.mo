@@ -11,19 +11,22 @@ import Float "mo:base/Float";
 import Types "types";
 
 module {
+    public type InvestmentData = {
+        projectId : Text;
+        amount : Nat;
+    };
+    public type ProfitDistribution = {
+        investorProfit : Int;
+        farmerProfit : Int;
+    };
+
     public class Investments() {
         private var investmentMap = TrieMap.TrieMap<Text, Types.Investment>(Text.equal, Text.hash);
         private var nextInvestmentId : Nat = 0;
 
-        public type InvestmentData = {
-            projectId : Text;
-            amount : Nat;
-        };
+        
 
-        public type ProfitDistribution = {
-            investorProfit : Int;
-            farmerProfit : Int;
-        };
+        
 
         // Make an investment in a project
         public shared(msg) func invest(data: InvestmentData) : async Result.Result<Text, Text> {
