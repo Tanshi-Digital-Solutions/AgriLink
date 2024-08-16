@@ -115,6 +115,17 @@ module {
             };
         };
 
+        public func loginWithNFID(caller: Principal) : async Result.Result<Types.ShareableUser, Text> {
+            switch (userMap.get(caller)) {
+                case (?user) {
+                    #ok(toShareableUser(user))
+                };
+                case null {
+                    #err("User not found. Please create an account first.")
+                };
+            };
+        };
+
         private func toShareableUser(user: Types.User) : Types.ShareableUser {
             {
                 id = user.id;

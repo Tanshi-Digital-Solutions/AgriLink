@@ -25,7 +25,7 @@ module {
         private var nextInvestmentId : Nat = 0;
 
         // Make an investment in a project
-        public func invest(caller: Principal, data: InvestmentData) : Result.Result<Text, Text> {
+        public func invest(caller: Principal, data: InvestmentData) : async Result.Result<Text, Text> {
             let investmentId = "inv_" # Nat.toText(nextInvestmentId);
             nextInvestmentId += 1;
 
@@ -50,7 +50,7 @@ module {
         };
 
         // Get all investments for a specific project
-        public func getProjectInvestments(projectId: Text) : [Types.Investment] {
+        public func getProjectInvestments(projectId: Text) :  [Types.Investment] {
             Iter.toArray(Iter.filter(investmentMap.vals(), func (investment: Types.Investment) : Bool {
                 investment.projectId == projectId
             }))
@@ -64,7 +64,7 @@ module {
         };
 
         // Distribute profits for a project
-        public func distributeProfits(projectId: Text, totalProfit: Nat) : Result.Result<ProfitDistribution, Text> {
+        public func distributeProfits(projectId: Text, totalProfit: Nat) : async Result.Result<ProfitDistribution, Text> {
             let projectInvestments = getProjectInvestments(projectId);
             let totalInvestment = Array.foldLeft<Types.Investment, Nat>(projectInvestments, 0, func (acc, inv) { acc + inv.amount });
 
@@ -87,7 +87,7 @@ module {
         };
 
         // Return capital to investors (e.g., when a project is completed or cancelled)
-        public func returnCapital(projectId: Text) : Result.Result<Text, Text> {
+        public func returnCapital(projectId: Text) : async Result.Result<Text, Text> {
             let projectInvestments = getProjectInvestments(projectId);
 
             for (investment in projectInvestments.vals()) {
@@ -99,7 +99,7 @@ module {
         };
 
         // Calculate total investment for a project
-        public func calculateTotalInvestment(projectId: Text) : Nat {
+        public func calculateTotalInvestment(projectId: Text) : async Nat {
             let projectInvestments = getProjectInvestments(projectId);
             Array.foldLeft<Types.Investment, Nat>(projectInvestments, 0, func (acc, inv) { acc + inv.amount })
         };

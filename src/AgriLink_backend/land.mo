@@ -26,7 +26,7 @@ module {
         private var nextNftId : Nat = 0;
 
         // Create a new LandNFT
-        public func createLandNFT(data: CreateLandNFTData) : Result.Result<Text, Text> {
+        public func createLandNFT(data: CreateLandNFTData) : async Result.Result<Text, Text> {
             let nftId = "land_" # Nat.toText(nextNftId);
             nextNftId += 1;
 
@@ -51,7 +51,7 @@ module {
         };
 
         // Update LandNFT details
-        public func updateLandNFT(caller: Principal, nftId: Text, data: UpdateLandNFTData) : Result.Result<Text, Text> {
+        public func updateLandNFT(caller: Principal, nftId: Text, data: UpdateLandNFTData) : async Result.Result<Text, Text> {
             switch (nftMap.get(nftId)) {
                 case (?landNFT) {
                     if (landNFT.owner != caller) {
@@ -73,7 +73,7 @@ module {
         };
 
         // Transfer LandNFT ownership
-        public func transferLandNFT(caller: Principal, nftId: Text, newOwner: Principal) : Result.Result<Text, Text> {
+        public func transferLandNFT(caller: Principal, nftId: Text, newOwner: Principal) : async Result.Result<Text, Text> {
             switch (nftMap.get(nftId)) {
                 case (?landNFT) {
                     if (landNFT.owner != caller) {
@@ -95,14 +95,14 @@ module {
         };
 
         // Get all LandNFTs owned by a specific user
-        public func getUserLandNFTs(userId: Principal) : [Types.LandParcel] {
+        public func getUserLandNFTs(userId: Principal) : async [Types.LandParcel] {
             Iter.toArray(Iter.filter(nftMap.vals(), func (landNFT: Types.LandParcel) : Bool {
                 landNFT.owner == userId
             }))
         };
 
         // Get all LandNFTs
-        public func getAllLandNFTs() : [Types.LandParcel] {
+        public func getAllLandNFTs() : async [Types.LandParcel] {
             Iter.toArray(nftMap.vals())
         };
 

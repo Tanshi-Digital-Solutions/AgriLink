@@ -37,7 +37,7 @@ module {
         private var projectMap = TrieMap.TrieMap<Text, Types.Project>(Text.equal, Text.hash);
         private var nextProjectId : Nat = 0;
 
-        public func createProject(caller: Principal, name: Text, description: Text, fundingGoal: Nat, startDate: Time.Time, endDate: Time.Time) : Result.Result<Text, Text> {
+        public func createProject(caller: Principal, name: Text, description: Text, fundingGoal: Nat, startDate: Time.Time, endDate: Time.Time) : async Result.Result<Text, Text> {
             let owner = caller;
             let projectId = "proj_" # Nat.toText(nextProjectId);
             nextProjectId += 1;
@@ -60,7 +60,7 @@ module {
             #ok("Project created successfully with ID: " # projectId)
         };
 
-        public func getProject(projectId: Text) : Result.Result<ShareableProject, Text> {
+        public func getProject(projectId: Text) : async Result.Result<ShareableProject, Text> {
             switch (projectMap.get(projectId)) {
                 case (?project) {
                     let shareableProject : ShareableProject = {
@@ -82,7 +82,7 @@ module {
             }
         };
 
-        public func updateProject(caller: Principal, projectId: Text, data: UpdateProjectData) : Result.Result<Text, Text> {
+        public func updateProject(caller: Principal, projectId: Text, data: UpdateProjectData) : async Result.Result<Text, Text> {
             switch (projectMap.get(projectId)) {
                 case (?project) {
                     if (project.owner != caller) {
@@ -102,7 +102,7 @@ module {
             }
         };
 
-        public func addProjectUpdate(caller: Principal, projectId: Text, content: Text) : Result.Result<Text, Text> {
+        public func addProjectUpdate(caller: Principal, projectId: Text, content: Text) : async Result.Result<Text, Text> {
             switch (projectMap.get(projectId)) {
                 case (?project) {
                     if (project.owner != caller) {
@@ -122,7 +122,7 @@ module {
             }
         };
 
-        public func fundProject(caller: Principal, projectId: Text, amount: Nat) : Result.Result<Nat, Text> {
+        public func fundProject(caller: Principal, projectId: Text, amount: Nat) : async Result.Result<Nat, Text> {
             switch (projectMap.get(projectId)) {
                 case (?project) {
                     let investor = caller;
@@ -144,7 +144,7 @@ module {
             }
         };
 
-        public func getAllProjects() : [ShareableProject] {
+        public func getAllProjects() : async [ShareableProject] {
             Iter.toArray(Iter.map(projectMap.vals(), func (project: Types.Project) : ShareableProject {
                 {
                     id = project.id;
@@ -162,7 +162,7 @@ module {
             }))
         };
 
-        public func getUserProjects(userId: Principal) : [ShareableProject] {
+        public func getUserProjects(userId: Principal) : async [ShareableProject] {
             Array.map(
                 Array.filter(Iter.toArray(projectMap.vals()), func (project: Types.Project) : Bool {
                     project.owner == userId

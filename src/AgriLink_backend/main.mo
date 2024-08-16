@@ -50,9 +50,13 @@ actor class AgriLink() = this {
         await users.loginWithII(msg.caller)
     };
 
+    public shared(msg) func loginWithNFID() : async Result.Result<Types.ShareableUser, Text> {
+        await users.loginWithNFID(msg.caller)
+    };
+
     // Investment Management
     public shared(msg) func invest(data: InvestmentsModule.InvestmentData) : async Result.Result<Text, Text> {
-        investments.invest(msg.caller, data)
+        await investments.invest(msg.caller, data)
     };
 
     public query func getInvestment(investmentId: Text) : async Result.Result<Types.Investment, Text> {
@@ -68,15 +72,15 @@ actor class AgriLink() = this {
     };
 
     public func distributeProfits(projectId: Text, totalProfit: Nat) : async Result.Result<InvestmentsModule.ProfitDistribution, Text> {
-        investments.distributeProfits(projectId, totalProfit)
+        await investments.distributeProfits(projectId, totalProfit)
     };
 
     public func returnCapital(projectId: Text) : async Result.Result<Text, Text> {
-        investments.returnCapital(projectId)
+        await investments.returnCapital(projectId)
     };
 
-    public query func calculateTotalInvestment(projectId: Text) : async Nat {
-        investments.calculateTotalInvestment(projectId)
+    public func calculateTotalInvestment(projectId: Text) : async Nat {
+        await investments.calculateTotalInvestment(projectId)
     };
 
     // Social Features
@@ -105,55 +109,57 @@ actor class AgriLink() = this {
 
     // Project Management
     public shared(msg) func createProject(name: Text, description: Text, fundingGoal: Nat, startDate: Time.Time, endDate: Time.Time) : async Result.Result<Text, Text> {
-        projects.createProject(msg.caller, name, description, fundingGoal, startDate, endDate)
+        await projects.createProject(msg.caller, name, description, fundingGoal, startDate, endDate)
     };
 
-    public shared(msg) func getProject(projectId: Text) : async Result.Result<ProjectsModule.ShareableProject, Text> {
-        projects.getProject(projectId)
+    public func getProject(projectId: Text) : async Result.Result<ProjectsModule.ShareableProject, Text> {
+        await projects.getProject(projectId)
     };
 
     public shared(msg) func updateProject(projectId: Text, data: ProjectsModule.UpdateProjectData) : async Result.Result<Text, Text> {
-        projects.updateProject(msg.caller, projectId, data)
+        await projects.updateProject(msg.caller, projectId, data)
     };
 
     public shared(msg) func addProjectUpdate(projectId: Text, content: Text) : async Result.Result<Text, Text> {
-        projects.addProjectUpdate(msg.caller, projectId, content)
+        await projects.addProjectUpdate(msg.caller, projectId, content)
     };
 
     public shared(msg) func fundProject(projectId: Text, amount: Nat) : async Result.Result<Nat, Text> {
-        projects.fundProject(msg.caller, projectId, amount)
+        await projects.fundProject(msg.caller, projectId, amount)
     };
 
     public func getAllProjects() : async [ProjectsModule.ShareableProject] {
-        projects.getAllProjects()
+        await projects.getAllProjects()
     };
 
     public func getUserProjects(userId: Principal) : async [ProjectsModule.ShareableProject] {
-        projects.getUserProjects(userId)
+        await projects.getUserProjects(userId)
     };
 
-    public shared(msg) func createLandNFT(data: LandNFTsModule.CreateLandNFTData) : async Result.Result<Text, Text> {
-        landNFTs.createLandNFT(data)
+
+    //Land NFTs
+    public func createLandNFT(data: LandNFTsModule.CreateLandNFTData) : async Result.Result<Text, Text> {
+        await landNFTs.createLandNFT(data)
     };
 
-    public shared(msg) func getLandNFT(nftId: Text) : async Result.Result<Types.LandParcel, Text> {
+    public func getLandNFT(nftId: Text) : async Result.Result<Types.LandParcel, Text> {
         await landNFTs.getLandNFT(nftId)
     };
 
     public shared(msg) func updateLandNFT(nftId: Text, data: LandNFTsModule.UpdateLandNFTData) : async Result.Result<Text, Text> {
-        landNFTs.updateLandNFT(msg.caller, nftId, data)
+        await landNFTs.updateLandNFT(msg.caller, nftId, data)
     };
 
     public shared(msg) func transferLandNFT(nftId: Text, newOwner: Principal) : async Result.Result<Text, Text> {
-        landNFTs.transferLandNFT(msg.caller, nftId, newOwner)
+        await landNFTs.transferLandNFT(msg.caller, nftId, newOwner)
     };
 
-    public shared(msg) func getUserLandNFTs(userId: Principal) : async [Types.LandParcel] {
-        landNFTs.getUserLandNFTs(userId)
+    public func getUserLandNFTs(userId: Principal) : async [Types.LandParcel] {
+        await landNFTs.getUserLandNFTs(userId)
     };
 
-    public shared(msg) func getAllLandNFTs() : async [Types.LandParcel] {
-        landNFTs.getAllLandNFTs()
+    public func getAllLandNFTs() : async [Types.LandParcel] {
+        await landNFTs.getAllLandNFTs()
     };
 
     // System Upgrade
