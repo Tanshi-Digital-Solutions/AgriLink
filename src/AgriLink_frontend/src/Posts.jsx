@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AgriLink_backend } from 'declarations/AgriLink_backend';
-import { Menu, X, Home, Briefcase, FileText, MapPin, Users, DollarSign, Calendar } from 'lucide-react';
-import './LandNFTs.scss';
+import { Menu, X, Home, Briefcase, FileText, MapPin, Users, DollarSign, Calendar, ThumbsUp, MessageSquare, Share2, User2 } from 'lucide-react';
+import './Posts.scss';
 
 const formatDate = (timestamp) => {
   if (typeof timestamp === 'bigint') {
@@ -14,64 +14,65 @@ const formatDate = (timestamp) => {
   }
 
   const date = new Date(timestamp);
-
+  
   if (isNaN(date.getTime())) {
     console.error('Invalid date:', timestamp);
     return 'Invalid Date';
   }
-
+  
   return date.toLocaleDateString();
 };
 
-const NFTsGrid = () => {
-  const [nfts, setNFTs] = useState([]);
+const PostsFeed = () => {
+  const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchNFTs();
+    fetchPosts();
   }, []);
 
-  const fetchNFTs = async () => {
+  const fetchPosts = async () => {
     try {
       setLoading(true);
-      const nftsResult = await AgriLink_backend.getAllLandNFTs();
-      const convertedNFTs = await Promise.all(nftsResult.map(async (nft) => {
-        let ownerName = 'Unknown';
-        try {
-          const userResult = await AgriLink_backend.getUser(nft.owner);
-          if (userResult.ok) {
-            ownerName = userResult.ok.name;
-          }
-        } catch (error) {
-          console.error('Error fetching user:', error);
-        }
-        return {
-          ...nft,
-          createdAt: formatDate(nft.createdAt),
-          ownerName
-        };
-      }));
-      setNFTs(convertedNFTs);
+      const postsResult = await AgriLink_backend.getAllPosts();
+      console.log('Raw posts data:', postsResult);
+      setPosts(postsResult);
     } catch (error) {
-      console.error('Error fetching NFTs:', error);
+      console.error('Error fetching posts:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleNFTClick = (nftId) => {
-    navigate(`/nfts/${nftId}`);
+  const renderPostContent = (content) => {
+    if (typeof content === 'string') {
+      return content;
+    }
+    if (typeof content === 'object') {
+      return JSON.stringify(content);
+    }
+    return 'Content unavailable';
+  };
+
+  const renderAuthor = (author) => {
+    if (typeof author === 'string') {
+      return author;
+    }
+    if (typeof author === 'object' && author._isPrincipal) {
+      return 'Anonymous';
+    }
+    return 'Unknown Author';
   };
 
   if (loading) {
-    return <div className="loading">Loading NFTs...</div>;
+    return <div className="loading">Loading posts...</div>;
   }
 
   return (
-    <div className="nfts-page">
+    <div className="posts-page">
       <header className="dashboard-header">
         <div className="header-content">
           <button className="menu-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
@@ -91,7 +92,7 @@ const NFTsGrid = () => {
         </div>
       </header>
 
-      <div className="nfts-content">
+      <div className="posts-content">
         <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
           <div className="sidebar-header">
             <h2>AgriLink</h2>
@@ -108,21 +109,26 @@ const NFTsGrid = () => {
         </aside>
 
         <main className="main-content">
-          <h2>Land NFTs</h2>
-          <div className="nfts-grid">
-            {nfts.map((nft) => (
-              <div key={nft.id} className="nft-card" onClick={() => handleNFTClick(nft.id)}>
-                <h3>{nft.name}</h3>
-                <p className="nft-description">{nft.description}</p>
-                <div className="nft-details">
-                  <p><strong>NFT ID:</strong> {nft.id}</p>
-                  <p><MapPin size={16} /> <strong>Location:</strong> {nft.location}</p>
-                  <p><Calendar size={16} /> <strong>Created:</strong> {nft.createdAt}</p>
-                  <p><Users size={16} /> <strong>Owner:</strong> {nft.ownerName}</p>
+          <h2>Social Feed</h2>
+          <div className="posts-feed">
+            {posts.map((post) => (
+              <div key={post.id} className="post-card">
+                <div className="post-header">
+                  <User2 size={24} />
+                  <div className="post-info">
+                    <h3>{renderAuthor(post.author)}</h3>
+                    <p className="post-date">{formatDate(post.timestamp)}</p>
+                  </div>
                 </div>
-                <button className="view-details-button">
-                  View Details
-                </button>
+                <p className="post-content">{renderPostContent(post.content)}</p>
+                {post.projectId && (
+                  <p className="post-project">Related Project: <Link to={`/projects/${post.projectId}`}>{post.projectId}</Link></p>
+                )}
+                <div className="post-actions">
+                  <button className="action-button"><ThumbsUp size={18} /> Like</button>
+                  <button className="action-button"><MessageSquare size={18} /> Comment</button>
+                  <button className="action-button"><Share2 size={18} /> Share</button>
+                </div>
               </div>
             ))}
           </div>
@@ -132,4 +138,4 @@ const NFTsGrid = () => {
   );
 };
 
-export default NFTsGrid;
+export default PostsFeed;

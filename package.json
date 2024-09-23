@@ -16,11 +16,12 @@
     "src/AgriLink_frontend"
   ],
   "dependencies": {
-    "@dfinity/auth-client": "^2.0.0",
+    "@dfinity/auth-client": "^2.1.1",
     "@headlessui/react": "^2.1.2",
     "@heroicons/react": "^2.1.5",
     "@nfid/embed": "^0.10.3",
     "alpine": "^0.2.1",
+    "lucide-react": "^0.445.0",
     "react-chartjs-2": "^5.2.0",
     "react-router-dom": "^6.26.1",
     "sass": "^1.77.8"

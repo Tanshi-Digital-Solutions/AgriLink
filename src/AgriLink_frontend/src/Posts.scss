@@ -1,0 +1,106 @@
+// Posts.scss
+
+// Import variables and mixins from ProjectsGrid.scss
+@import 'Projects';
+
+// Posts page specific styles
+.posts-page {
+  @extend .projects-page;
+}
+
+.posts-content {
+  @extend .projects-content;
+}
+
+// Main content styles
+.main-content {
+  @extend .main-content;
+
+  h2 {
+    color: $primary-color;
+    margin-bottom: 20px;
+  }
+}
+
+// Posts feed styles
+.posts-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.post-card {
+  background-color: $white;
+  border-radius: 8px;
+  box-shadow: $shadow;
+  padding: 20px;
+
+  .post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+
+    .post-info {
+      margin-left: 10px;
+
+      h3 {
+        margin: 0;
+        color: $primary-color;
+      }
+
+      .post-date {
+        font-size: 0.8em;
+        color: lighten($text-color, 20%);
+        margin: 0;
+      }
+    }
+  }
+
+  .post-content {
+    margin-bottom: 15px;
+  }
+
+  .post-project {
+    font-style: italic;
+    margin-bottom: 15px;
+
+    a {
+      color: $primary-color;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+  .post-actions {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid lighten($text-color, 60%);
+    padding-top: 15px;
+
+    .action-button {
+      background: none;
+      border: none;
+      color: $primary-color;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.2s;
+
+      &:hover {
+        color: darken($primary-color, 10%);
+      }
+    }
+  }
+}
+
+// Loading state
+.loading {
+  @include flex-center;
+  height: 100vh;
+  font-size: 24px;
+  color: $primary-color;
+}

@@ -46,7 +46,7 @@ module {
                 case (?user) { 
                     #ok(toShareableUser(user))
                 };
-                case null { #err("User not found") };
+                case null { #err("User not found please try again") };
             };
         };
 

@@ -1,0 +1,137 @@
+// ProjectDetails.scss
+
+// Import variables and mixins from ProjectsGrid.scss
+@import './Projects.scss';
+
+.project-details-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.project-details-content {
+  display: flex;
+  padding-top: 60px; // To account for the fixed header
+  
+  @media (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+  max-width: calc(100% - 250px); // Subtract sidebar width
+  margin: 0 auto;
+  width: 100%;
+
+  @media (max-width: 768px) {
+    max-width: 100%;
+  }
+}
+
+.project-details-card {
+  background-color: $white;
+  border-radius: 8px;
+  box-shadow: $shadow;
+  padding: 30px;
+  margin-bottom: 20px;
+
+  h2 {
+    color: $primary-color;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-size: 28px;
+  }
+
+  .description {
+    font-size: 16px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+  }
+
+  .details {
+    margin-bottom: 20px;
+
+    p {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 10px 0;
+      font-size: 16px;
+    }
+  }
+
+  .project-progress {
+    margin-bottom: 30px;
+
+    .progress-bar {
+      background-color: lighten($primary-color, 40%);
+      border-radius: 10px;
+      height: 15px;
+      overflow: hidden;
+      margin-bottom: 10px;
+    }
+
+    .progress {
+      background-color: $primary-color;
+      height: 100%;
+      transition: width 0.3s ease-in-out;
+    }
+
+    p {
+      text-align: right;
+      font-size: 16px;
+      font-weight: bold;
+      color: $primary-color;
+    }
+  }
+
+  .invest-button, .back-button {
+    padding: 12px 24px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.1s;
+    border: none;
+    margin-right: 10px;
+
+    &:hover {
+      transform: translateY(-2px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  .invest-button {
+    background-color: $primary-color;
+    color: $white;
+
+    &:hover {
+      background-color: darken($primary-color, 10%);
+    }
+  }
+
+  .back-button {
+    background-color: $secondary-color;
+    color: $white;
+
+    &:hover {
+      background-color: darken($secondary-color, 10%);
+    }
+  }
+}
+
+// Responsive styles
+@media (max-width: 768px) {
+  .project-details-card {
+    padding: 20px;
+  }
+
+  .invest-button, .back-button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}

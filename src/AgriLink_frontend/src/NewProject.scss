@@ -1,0 +1,171 @@
+$primary-color: #4CAF50;
+$secondary-color: #45a049;
+$background-color: #f0f4f8;
+$text-color: #333;
+$header-height: 60px;
+$breakpoint-mobile: 768px;
+
+.create-project {
+  font-family: 'Arial', sans-serif;
+  min-height: 100vh;
+  background-color: $background-color;
+  color: $text-color;
+
+  &__header {
+    background-color: $primary-color;
+    color: white;
+    padding: 0 20px;
+    height: $header-height;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 1001;
+
+    .logo {
+      font-size: 24px;
+      font-weight: bold;
+    }
+
+    .mobile-menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      color: white;
+      cursor: pointer;
+
+      @media (max-width: $breakpoint-mobile) {
+        display: block;
+      }
+    }
+
+    nav {
+      display: flex;
+      gap: 20px;
+
+      a {
+        color: white;
+        text-decoration: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        transition: background-color 0.3s ease;
+
+        &:hover, &.active {
+          background-color: darken($primary-color, 10%);
+        }
+      }
+
+      @media (max-width: $breakpoint-mobile) {
+        display: none;
+
+        &.mobile-nav-open {
+          display: flex;
+          flex-direction: column;
+          position: absolute;
+          top: $header-height;
+          left: 0;
+          right: 0;
+          background-color: $primary-color;
+          padding: 10px;
+        }
+      }
+    }
+
+    .user-menu {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      @media (max-width: $breakpoint-mobile) {
+        display: none;
+      }
+    }
+  }
+
+  &__main {
+    padding: 80px 20px 20px;
+    max-width: 600px;
+    margin: 0 auto;
+
+    h1 {
+      color: $primary-color;
+      margin-bottom: 20px;
+    }
+  }
+}
+
+.create-project-form {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  .form-group {
+    margin-bottom: 20px;
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input, textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+
+      &:focus {
+        outline: none;
+        border-color: $primary-color;
+      }
+    }
+
+    textarea {
+      height: 100px;
+      resize: vertical;
+    }
+  }
+
+  .error-message {
+    color: red;
+    margin-bottom: 10px;
+  }
+
+  .submit-btn {
+    background-color: $primary-color;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: darken($primary-color, 10%);
+    }
+
+    &:disabled {
+      background-color: lighten($primary-color, 20%);
+      cursor: not-allowed;
+    }
+  }
+}
+
+.logout-btn {
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  color: white;
+  cursor: pointer;
+
+  svg {
+    margin-right: 5px;
+  }
+}

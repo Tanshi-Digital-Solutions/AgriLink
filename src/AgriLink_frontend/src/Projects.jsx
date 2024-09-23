@@ -2,76 +2,77 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AgriLink_backend } from 'declarations/AgriLink_backend';
 import { Menu, X, Home, Briefcase, FileText, MapPin, Users, DollarSign, Calendar } from 'lucide-react';
-import './LandNFTs.scss';
+import './Projects.scss';
+
+const bigIntToNumber = (value) => {
+  if (typeof value === 'bigint') {
+    return Number(value);
+  }
+  return value;
+};
 
 const formatDate = (timestamp) => {
   if (typeof timestamp === 'bigint') {
+    // Convert nanoseconds to milliseconds
     timestamp = Number(timestamp) / 1000000;
   } else if (typeof timestamp === 'number') {
+    // If it's already a number, assume it's in milliseconds
     timestamp = timestamp;
   } else if (typeof timestamp === 'string') {
+    // If it's a string, try parsing it
     timestamp = Date.parse(timestamp);
   }
 
   const date = new Date(timestamp);
-
+  
   if (isNaN(date.getTime())) {
     console.error('Invalid date:', timestamp);
     return 'Invalid Date';
   }
-
+  
   return date.toLocaleDateString();
 };
 
-const NFTsGrid = () => {
-  const [nfts, setNFTs] = useState([]);
+const ProjectsGrid = () => {
+  const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchNFTs();
+    fetchProjects();
   }, []);
 
-  const fetchNFTs = async () => {
+  const fetchProjects = async () => {
     try {
       setLoading(true);
-      const nftsResult = await AgriLink_backend.getAllLandNFTs();
-      const convertedNFTs = await Promise.all(nftsResult.map(async (nft) => {
-        let ownerName = 'Unknown';
-        try {
-          const userResult = await AgriLink_backend.getUser(nft.owner);
-          if (userResult.ok) {
-            ownerName = userResult.ok.name;
-          }
-        } catch (error) {
-          console.error('Error fetching user:', error);
-        }
-        return {
-          ...nft,
-          createdAt: formatDate(nft.createdAt),
-          ownerName
-        };
+      const projectsResult = await AgriLink_backend.getAllProjects();
+      const convertedProjects = projectsResult.map(project => ({
+        ...project,
+        fundingGoal: bigIntToNumber(project.fundingGoal),
+        currentFunding: bigIntToNumber(project.currentFunding),
+        startDate: formatDate(project.startDate),
+        endDate: formatDate(project.endDate)
       }));
-      setNFTs(convertedNFTs);
+      setProjects(convertedProjects);
     } catch (error) {
-      console.error('Error fetching NFTs:', error);
+      console.error('Error fetching projects:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleNFTClick = (nftId) => {
-    navigate(`/nfts/${nftId}`);
+  const handleProjectClick = (projectId) => {
+    navigate(`/projects/${projectId}`);
   };
 
   if (loading) {
-    return <div className="loading">Loading NFTs...</div>;
+    return <div className="loading">Loading projects...</div>;
   }
 
   return (
-    <div className="nfts-page">
+    <div className="projects-page">
       <header className="dashboard-header">
         <div className="header-content">
           <button className="menu-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
@@ -91,7 +92,7 @@ const NFTsGrid = () => {
         </div>
       </header>
 
-      <div className="nfts-content">
+      <div className="projects-content">
         <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
           <div className="sidebar-header">
             <h2>AgriLink</h2>
@@ -108,17 +109,26 @@ const NFTsGrid = () => {
         </aside>
 
         <main className="main-content">
-          <h2>Land NFTs</h2>
-          <div className="nfts-grid">
-            {nfts.map((nft) => (
-              <div key={nft.id} className="nft-card" onClick={() => handleNFTClick(nft.id)}>
-                <h3>{nft.name}</h3>
-                <p className="nft-description">{nft.description}</p>
-                <div className="nft-details">
-                  <p><strong>NFT ID:</strong> {nft.id}</p>
-                  <p><MapPin size={16} /> <strong>Location:</strong> {nft.location}</p>
-                  <p><Calendar size={16} /> <strong>Created:</strong> {nft.createdAt}</p>
-                  <p><Users size={16} /> <strong>Owner:</strong> {nft.ownerName}</p>
+          <h2>Available Projects</h2>
+          <div className="projects-grid">
+            {projects.map((project) => (
+              <div key={project.id} className="project-card" onClick={() => handleProjectClick(project.id)}>
+                <h3>{project.name}</h3>
+                <p className="project-description">{project.description}</p>
+                <div className="project-details">
+                  <p><strong>Project ID:</strong> {project.id}</p>
+                  <p><DollarSign size={16} /> <strong>Funding Goal:</strong> {project.fundingGoal} ZMW</p>
+                  <p><Calendar size={16} /> <strong>Start Date:</strong> {project.startDate}</p>
+                  <p><Calendar size={16} /> <strong>End Date:</strong> {project.endDate}</p>
+                </div>
+                <div className="project-progress">
+                  <div className="progress-bar">
+                    <div 
+                      className="progress" 
+                      style={{width: `${(project.currentFunding / project.fundingGoal) * 100}%`}}
+                    ></div>
+                  </div>
+                  <p>{Math.round((project.currentFunding / project.fundingGoal) * 100)}% funded</p>
                 </div>
                 <button className="view-details-button">
                   View Details
@@ -132,4 +142,4 @@ const NFTsGrid = () => {
   );
 };
 
-export default NFTsGrid;
+export default ProjectsGrid;

@@ -37,7 +37,7 @@ const NFTsGrid = () => {
   const fetchNFTs = async () => {
     try {
       setLoading(true);
-      const nftsResult = await AgriLink_backend.getAllLandNFTs();
+      const nftsResult = await AgriLink_backend.getUserLandNFTs();
       const convertedNFTs = await Promise.all(nftsResult.map(async (nft) => {
         let ownerName = 'Unknown';
         try {
