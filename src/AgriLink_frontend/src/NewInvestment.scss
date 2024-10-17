@@ -1,78 +1,27 @@
 .new-investment-page {
-  background-color: #f0f8f0;
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  background-color: #f0f8f0;
 
-  .dashboard__header {
-    background-color: #4CAF50;
-    color: white;
-    padding: 1rem;
+  .new-investment-content {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    .logo {
-      font-size: 1.5rem;
-      font-weight: bold;
-    }
-
-    .desktop-nav {
-      display: flex;
-      gap: 1rem;
-
-      a {
-        color: white;
-        text-decoration: none;
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-    }
-
-    .user-menu {
-      .logout-btn {
-        background: none;
-        border: none;
-        color: white;
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-    }
+    flex-grow: 1;
   }
 
-  .new-investment__main {
+  .main-content {
     flex-grow: 1;
     padding: 2rem;
     max-width: 600px;
     margin: 0 auto;
     width: 100%;
 
-    .back-link {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      color: #4CAF50;
-      text-decoration: none;
-      margin-bottom: 1rem;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-
-    h1 {
+    h2 {
       color: #2E7D32;
       margin-bottom: 2rem;
     }
 
-    .investment-form {
+    .new-investment-form {
       background-color: white;
       padding: 2rem;
       border-radius: 8px;
@@ -87,7 +36,7 @@
           color: #2E7D32;
         }
 
-        input {
+        input, select {
           width: 100%;
           padding: 0.5rem;
           border: 1px solid #A5D6A7;
@@ -102,17 +51,7 @@
         }
       }
 
-      .error-message {
-        color: #d32f2f;
-        margin-bottom: 1rem;
-      }
-
-      .success-message {
-        color: #388e3c;
-        margin-bottom: 1rem;
-      }
-
-      .submit-btn {
+      .submit-button {
         background-color: #4CAF50;
         color: white;
         border: none;
@@ -135,36 +74,26 @@
         }
       }
     }
+
+    .error-message {
+      color: #d32f2f;
+      margin-bottom: 1rem;
+    }
+
+    .success-message {
+      color: #388e3c;
+      margin-bottom: 1rem;
+    }
   }
 }
 
 @media (max-width: 768px) {
   .new-investment-page {
-    .dashboard__header {
-      flex-wrap: wrap;
-
-      .mobile-menu-toggle {
-        display: block;
-        background: none;
-        border: none;
-        color: white;
-        cursor: pointer;
-      }
-
-      .desktop-nav {
-        display: none;
-        width: 100%;
-        flex-direction: column;
-        gap: 0.5rem;
-        margin-top: 1rem;
-
-        &.mobile-nav-open {
-          display: flex;
-        }
-      }
+    .new-investment-content {
+      flex-direction: column;
     }
 
-    .new-investment__main {
+    .main-content {
       padding: 1rem;
     }
   }

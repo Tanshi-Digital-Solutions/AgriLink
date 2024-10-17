@@ -81,7 +81,7 @@ const Dashboard = () => {
             <Link to="/dashboard"><Home size={18} /> Dashboard</Link>
             <Link to="/projects"><Briefcase size={18} /> Projects</Link>
             <Link to="/feed"><FileText size={18} /> Feed</Link>
-            <Link to="/nfts"><MapPin size={18} /> NFTs</Link>
+            <Link to="/land-nfts"><MapPin size={18} /> NFTs</Link>
             <Link to="/contact"><Users size={18} /> Contact Us</Link>
           </nav>
           <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>

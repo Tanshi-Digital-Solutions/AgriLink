@@ -1,107 +1,123 @@
-$primary-color: #4CAF50;
-$secondary-color: #45a049;
-$background-color: #f0f4f8;
-$text-color: #333;
-$header-height: 60px;
-$breakpoint-mobile: 768px;
+// NewPost.scss
+// Import variables and mixins from the main stylesheet
+@import './Projects.scss';
 
-.create-post {
-  font-family: 'Arial', sans-serif;
+.new-post-page {
+  display: flex;
+  flex-direction: column;
   min-height: 100vh;
-  background-color: $background-color;
-  color: $text-color;
+}
 
-  &__header {
-    background-color: $primary-color;
-    color: white;
-    padding: 0 20px;
-    height: $header-height;
+.dashboard-header {
+  background-color: $primary-color;
+  padding: 1rem;
+  color: $white;
+
+  .header-content {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    z-index: 1001;
-
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-    }
-
-    .mobile-menu-toggle {
-      display: none;
-      background: none;
-      border: none;
-      color: white;
-      cursor: pointer;
-
-      @media (max-width: $breakpoint-mobile) {
-        display: block;
-      }
-    }
-
-    nav {
-      display: flex;
-      gap: 20px;
-
-      a {
-        color: white;
-        text-decoration: none;
-        padding: 5px 10px;
-        border-radius: 4px;
-        transition: background-color 0.3s ease;
-
-        &:hover, &.active {
-          background-color: darken($primary-color, 10%);
-        }
-      }
-
-      @media (max-width: $breakpoint-mobile) {
-        display: none;
-
-        &.mobile-nav-open {
-          display: flex;
-          flex-direction: column;
-          position: absolute;
-          top: $header-height;
-          left: 0;
-          right: 0;
-          background-color: $primary-color;
-          padding: 10px;
-        }
-      }
-    }
-
-    .user-menu {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-
-      @media (max-width: $breakpoint-mobile) {
-        display: none;
-      }
-    }
-  }
-
-  &__main {
-    padding: 80px 20px 20px;
-    max-width: 600px;
+    align-items: center;
+    max-width: 1200px;
     margin: 0 auto;
 
     h1 {
-      color: $primary-color;
-      margin-bottom: 20px;
+      margin: 0;
+      font-size: 1.5rem;
+    }
+
+    .menu-toggle, .mobile-menu-toggle {
+      background: none;
+      border: none;
+      color: $white;
+      cursor: pointer;
+      display: none;
+    }
+
+    .header-nav {
+      display: flex;
+      gap: 1rem;
+
+      a {
+        color: $white;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
     }
   }
 }
 
-.create-post-form {
-  background-color: white;
-  padding: 20px;
+.new-post-content {
+  display: flex;
+  flex: 1;
+}
+
+.sidebar {
+  width: 250px;
+  background-color: $secondary-color;
+  padding: 1rem;
+  transition: transform 0.3s ease;
+
+  .sidebar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+
+    h2 {
+      margin: 0;
+      font-size: 1.2rem;
+      color: $primary-color;
+    }
+
+    .close-sidebar {
+      background: none;
+      border: none;
+      color: $primary-color;
+      cursor: pointer;
+      display: none;
+    }
+  }
+
+  .sidebar-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    a {
+      color: $primary-color;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem;
+      border-radius: 4px;
+
+      &:hover {
+        background-color: rgba($primary-color, 0.1);
+      }
+    }
+  }
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.new-post-form {
+  background-color: $white;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  box-shadow: $shadow;
+  padding: 20px;
+  max-width: 600px;
+  margin: 0 auto;
 
   .form-group {
     margin-bottom: 20px;
@@ -109,13 +125,13 @@ $breakpoint-mobile: 768px;
     label {
       display: block;
       margin-bottom: 5px;
-      font-weight: bold;
+      color: $primary-color;
     }
 
     textarea, select {
       width: 100%;
       padding: 10px;
-      border: 1px solid #ddd;
+      border: 1px solid $secondary-color;
       border-radius: 4px;
       font-size: 16px;
 
@@ -127,30 +143,20 @@ $breakpoint-mobile: 768px;
 
     textarea {
       resize: vertical;
-    }
-
-    select {
-      appearance: none;
-      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23333' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 10px center;
-      padding-right: 30px;
+      min-height: 100px;
     }
   }
 
-  .error-message {
-    color: red;
-    margin-bottom: 10px;
-  }
-
-  .submit-btn {
+  .submit-button {
+    @extend .invest-button;
+    width: 100%;
+    padding: 12px;
+    font-size: 18px;
     background-color: $primary-color;
-    color: white;
+    color: $white;
     border: none;
-    padding: 10px 20px;
     border-radius: 4px;
     cursor: pointer;
-    font-size: 16px;
     transition: background-color 0.3s ease;
 
     &:hover {
@@ -158,21 +164,72 @@ $breakpoint-mobile: 768px;
     }
 
     &:disabled {
-      background-color: lighten($primary-color, 20%);
+      background-color: $secondary-color;
       cursor: not-allowed;
     }
   }
 }
 
-.logout-btn {
-  display: flex;
-  align-items: center;
-  background-color: transparent;
-  border: none;
-  color: white;
-  cursor: pointer;
+.error-message, .success-message {
+  margin-top: 20px;
+  padding: 10px;
+  border-radius: 4px;
+  text-align: center;
+}
 
-  svg {
-    margin-right: 5px;
+.error-message {
+  background-color: #ffebee;
+  color: #c62828;
+}
+
+.success-message {
+  background-color: #e8f5e9;
+  color: #2e7d32;
+}
+
+// Responsive styles
+@media (max-width: 768px) {
+  .dashboard-header {
+    .header-content {
+      .menu-toggle, .mobile-menu-toggle {
+        display: block;
+      }
+
+      .header-nav {
+        display: none;
+
+        &.open {
+          display: flex;
+          flex-direction: column;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          right: 0;
+          background-color: $primary-color;
+          padding: 1rem;
+        }
+      }
+    }
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    z-index: 1000;
+
+    &.open {
+      transform: translateX(0);
+    }
+
+    .close-sidebar {
+      display: block;
+    }
+  }
+
+  .new-post-form {
+    max-width: 100%;
   }
 }

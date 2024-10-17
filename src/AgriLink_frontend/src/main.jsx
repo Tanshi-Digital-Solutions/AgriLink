@@ -29,7 +29,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path="/investments" element={<Investments />} /> 
         <Route path="/land-nfts" element={<Land />} /> 
         <Route path="/land-nfts/new" element={<NewLandNFT />} />
-        <Route path="/posts/new" element={<NewPost />} />
+        <Route path="/feed/new" element={<NewPost />} />
         <Route path="/projects/new" element={<NewProject />} />
         <Route path="/feed" element={<Post />} />
         <Route path="/projects" element={<Project />} />

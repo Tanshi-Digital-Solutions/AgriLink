@@ -10,12 +10,16 @@ module {
 
     public type CreateLandNFTData = {
         owner : Principal;
+        name: Text;
+        description: Text;
         location : Types.Location;
         size : Nat;
     };
 
     public type UpdateLandNFTData = {
         owner : ?Principal;
+        name: ?Text;
+        description: ?Text;
         location : ?Types.Location;
         size : ?Nat;
         status : ?Types.LandStatus;
@@ -32,6 +36,8 @@ module {
 
             let newLandNFT : Types.LandParcel = {
                 id = nftId;
+                name = data.name;
+                description = data.description;
                 owner = data.owner;
                 location = data.location;
                 size = data.size;
@@ -59,6 +65,8 @@ module {
                     } else {
                         let updatedLandNFT : Types.LandParcel = {
                             id = landNFT.id;
+                            name = switch (data.name) { case (?n) { n }; case null { landNFT.name } };
+                            description = switch (data.description) { case (?d) { d }; case null { landNFT.description } };
                             owner = switch (data.owner) { case (?o) { o }; case null { landNFT.owner } };
                             location = switch (data.location) { case (?l) { l }; case null { landNFT.location } };
                             size = switch (data.size) { case (?s) { s }; case null { landNFT.size } };
@@ -81,6 +89,8 @@ module {
                     } else {
                         let updatedLandNFT : Types.LandParcel = {
                             id = landNFT.id;
+                            name = landNFT.name;
+                            description = landNFT.description;
                             owner = newOwner;
                             location = landNFT.location;
                             size = landNFT.size;

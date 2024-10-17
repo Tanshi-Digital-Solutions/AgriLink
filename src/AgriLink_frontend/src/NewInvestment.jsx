@@ -1,154 +1,140 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AgriLink_backend } from 'declarations/AgriLink_backend';
-import { CreditCard, ArrowLeft, Menu, LogOut } from 'lucide-react';
+import Header from './components/Header';
+import Sidebar from './components/Sidebar';
 import './NewInvestment.scss';
 
 const NewInvestment = () => {
-  const [investmentData, setInvestmentData] = useState({
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [formData, setFormData] = useState({
     projectId: '',
     amount: '',
-    duration: '',
-    expectedReturn: '',
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [user, setUser] = useState(null);
+  const [projects, setProjects] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchUserData();
+    fetchProjects();
+  }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const userResult = await AgriLink_backend.getUser();
+      if ('ok' in userResult) {
+        setUser(userResult.ok);
+      } else {
+        navigate('/login');
+      }
+    } catch (err) {
+      console.error('Error fetching user data:', err);
+      setError('Failed to fetch user data. Please try again.');
+    }
+  };
+
+  const fetchProjects = async () => {
+    try {
+      const projectsResult = await AgriLink_backend.getAllProjects();
+      setProjects(projectsResult);
+    } catch (err) {
+      console.error('Error fetching projects:', err);
+      setError('Failed to fetch projects. Please try again.');
+    }
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setInvestmentData({ ...investmentData, [name]: value });
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError(null);
-    setSuccess(false);
+    setError('');
+    setSuccess('');
+
+    if (!user) {
+      setError('User not authenticated');
+      setLoading(false);
+      return;
+    }
 
     try {
-      const result = await AgriLink_backend.createInvestment({
-        projectId: investmentData.projectId,
-        amount: BigInt(parseFloat(investmentData.amount) * 100), // Convert to cents
-        duration: BigInt(parseInt(investmentData.duration)),
-        expectedReturn: parseFloat(investmentData.expectedReturn),
-      });
+      const result = await AgriLink_backend.fundProject(
+        formData.projectId,
+        BigInt(formData.amount)
+      );
 
       if ('ok' in result) {
-        setSuccess(true);
-        // Reset form after successful submission
-        setInvestmentData({
-          projectId: '',
-          amount: '',
-          duration: '',
-          expectedReturn: '',
-        });
+        setSuccess(`Investment successful. New total funding: ${result.ok} ZMW`);
+        setFormData({ projectId: '', amount: '' });
       } else {
-        throw new Error(result.err);
+        setError(result.err);
       }
     } catch (err) {
-      setError(err.message || 'Failed to create investment');
+      setError('An error occurred while creating the investment.');
+      console.error(err);
     } finally {
       setLoading(false);
     }
   };
 
-  const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen);
-
   return (
     <div className="new-investment-page">
-      <header className="dashboard__header">
-        <div className="logo">AgriLink</div>
-        <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
-          <Menu size={24} />
-        </button>
-        <nav className={`desktop-nav ${mobileMenuOpen ? 'mobile-nav-open' : ''}`}>
-          <Link to="/dashboard">Dashboard</Link>
-          <Link to="/investments">Investments</Link>
-          <Link to="/projects">Projects</Link>
-          <Link to="/land-nfts">Land NFTs</Link>
-        </nav>
-        <div className="user-menu">
-          <button className="logout-btn" onClick={() => navigate('/login')}>
-            <LogOut size={18} />
-            Logout
-          </button>
-        </div>
-      </header>
-
-      <main className="new-investment__main">
-        <Link to="/dashboard" className="back-link">
-          <ArrowLeft size={20} />
-          Back to Dashboard
-        </Link>
-
-        <h1>Create New Investment</h1>
-
-        <form onSubmit={handleSubmit} className="investment-form">
-          <div className="form-group">
-            <label htmlFor="projectId">Project ID</label>
-            <input
-              type="text"
-              id="projectId"
-              name="projectId"
-              value={investmentData.projectId}
-              onChange={handleInputChange}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="amount">Investment Amount (ZMW)</label>
-            <input
-              type="number"
-              id="amount"
-              name="amount"
-              value={investmentData.amount}
-              onChange={handleInputChange}
-              min="0"
-              step="0.01"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="duration">Duration (days)</label>
-            <input
-              type="number"
-              id="duration"
-              name="duration"
-              value={investmentData.duration}
-              onChange={handleInputChange}
-              min="1"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="expectedReturn">Expected Return (%)</label>
-            <input
-              type="number"
-              id="expectedReturn"
-              name="expectedReturn"
-              value={investmentData.expectedReturn}
-              onChange={handleInputChange}
-              min="0"
-              step="0.01"
-              required
-            />
-          </div>
-
-          {error && <div className="error-message">{error}</div>}
-          {success && <div className="success-message">Investment created successfully!</div>}
-
-          <button type="submit" className="submit-btn" disabled={loading}>
-            {loading ? 'Creating...' : 'Create Investment'}
-            <CreditCard size={20} />
-          </button>
-        </form>
-      </main>
+      <Header />
+      <div className="new-investment-content">
+        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <main className="main-content">
+          <h2>Make a New Investment</h2>
+          {user && (
+            <p>Investing as: {user.name} (ID: {user.id.toString()})</p>
+          )}
+          <form className="new-investment-form" onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="projectId">Select Project:</label>
+              <select
+                id="projectId"
+                name="projectId"
+                value={formData.projectId}
+                onChange={handleInputChange}
+                required
+              >
+                <option value="">Select a project</option>
+                {projects.map((project) => (
+                  <option key={project.id} value={project.id}>
+                    {project.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="form-group">
+              <label htmlFor="amount">Investment Amount (ZMW):</label>
+              <input
+                type="number"
+                id="amount"
+                name="amount"
+                value={formData.amount}
+                onChange={handleInputChange}
+                required
+                min="1"
+              />
+            </div>
+            <button type="submit" className="submit-button" disabled={loading || !user}>
+              {loading ? 'Investing...' : 'Make Investment'}
+            </button>
+          </form>
+          {error && <p className="error-message">{error}</p>}
+          {success && <p className="success-message">{success}</p>}
+        </main>
+      </div>
     </div>
   );
 };

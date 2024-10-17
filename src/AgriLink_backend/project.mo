@@ -184,6 +184,17 @@ module {
                 }
             )
         };
+        
+        public func updateCurrentFunding(projectId: Text, amount: Nat) : async Result.Result<Nat, Text> {
+            switch (projectMap.get(projectId)) {
+                case (?project) {
+                    project.currentFunding += amount;
+                    projectMap.put(projectId, project);
+                    #ok(project.currentFunding)
+                };
+                case null { #err("Project not found") };
+            }
+        };
 
         // For upgrade persistence
         var projectEntries : [(Text, Types.Project)] = [];

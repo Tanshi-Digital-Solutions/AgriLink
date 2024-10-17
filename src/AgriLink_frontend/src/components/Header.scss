@@ -1,0 +1,76 @@
+.dashboard-header {
+  background-color: #e6f7e6;
+  padding: 1rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  visibility: visible; /* Ensure header is visible */
+  z-index: 1000;
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .header-title {
+      h1 {
+        color: #2d6a4f;
+        font-family: 'Poppins', sans-serif;
+        font-size: 1.8rem;
+        cursor: pointer;
+        text-decoration: none;
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: #1b4332;
+        }
+      }
+    }
+
+    .header-nav {
+      display: flex;
+      gap: 1.5rem;
+
+      a {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #40916c;
+        font-weight: 500;
+        text-decoration: none;
+        transition: color 0.3s ease;
+
+        &:hover {
+          color: #2d6a4f;
+        }
+
+        svg {
+          stroke: #40916c;
+        }
+      }
+    }
+
+    .mobile-menu-toggle {
+      background: none;
+      border: none;
+      cursor: pointer;
+      svg {
+        stroke: #2d6a4f;
+      }
+    }
+  }
+
+  @media (max-width: 768px) {
+    .header-nav {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background-color: #e6f7e6;
+      padding: 1rem;
+      flex-direction: column;
+      display: none;
+
+      &.open {
+        display: flex;
+      }
+    }
+  }
+}

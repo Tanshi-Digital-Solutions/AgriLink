@@ -46,20 +46,30 @@ const ProjectDetails = () => {
       try {
         setLoading(true);
         const projectResult = await AgriLink_backend.getProject(projectId);
-        const convertedProject = {
-          ...projectResult,
-          fundingGoal: bigIntToNumber(projectResult.fundingGoal),
-          currentFunding: bigIntToNumber(projectResult.currentFunding),
-          startDate: formatDate(projectResult.startDate),
-          endDate: formatDate(projectResult.endDate)
-        };
-        setProject(convertedProject);
+        
+        // Check if the projectResult contains 'ok' or 'err'
+        if ('ok' in projectResult) {
+          const projectData = projectResult.ok;
+          const convertedProject = {
+            ...projectData,
+            fundingGoal: bigIntToNumber(projectData.fundingGoal),
+            currentFunding: bigIntToNumber(projectData.currentFunding),
+            startDate: formatDate(projectData.startDate),
+            endDate: formatDate(projectData.endDate),
+          };
+          setProject(convertedProject);
+        } else {
+          // If there's an error, log or display the error message
+          console.error('Error fetching project:', projectResult.err);
+          setProject(null);  // Set project to null if an error occurred
+        }
       } catch (error) {
         console.error('Error fetching project:', error);
       } finally {
         setLoading(false);
       }
     };
+    
 
     fetchProject();
   }, [projectId]);

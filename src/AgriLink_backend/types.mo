@@ -95,6 +95,8 @@ module {
     owner: Principal;
     location: Location;
     size: Nat;
+    name: Text;
+    description: Text;
     status: LandStatus;
   };
 

@@ -124,16 +124,41 @@ actor class AgriLink() = this {
         await projects.addProjectUpdate(msg.caller, projectId, content)
     };
 
-    public shared(msg) func fundProject(projectId: Text, amount: Nat) : async Result.Result<Nat, Text> {
-        await projects.fundProject(msg.caller, projectId, amount)
-    };
-
     public func getAllProjects() : async [ProjectsModule.ShareableProject] {
         await projects.getAllProjects()
     };
 
     public func getUserProjects(userId: Principal) : async [ProjectsModule.ShareableProject] {
         await projects.getUserProjects(userId)
+    };
+
+    public shared(msg) func fundProject(projectId: Text, amount: Nat) : async Result.Result<Nat, Text> {
+        // First, create the investment
+        let investResult = await investments.invest(msg.caller, { projectId = projectId; amount = amount });
+        switch (investResult) {
+            case (#ok(_)) {
+                // If investment is successful, update the project's current funding
+                let updateResult = await projects.updateCurrentFunding(projectId, amount);
+                switch (updateResult) {
+                    case (#ok(newFunding)) {
+                        // Return the new total funding amount
+                        #ok(newFunding)
+                    };
+                    case (#err(e)) {
+                        // If updating fails, return the error
+                        #err("Investment created but failed to update project funding: " # e)
+                    };
+                }
+            };
+            case (#err(e)) {
+                // If investment fails, return the error
+                #err("Failed to create investment: " # e)
+            };
+        }
+    };
+
+    public func updateProjectCurrentFunding(projectId: Text, amount: Nat) : async Result.Result<Nat, Text> {
+        await projects.updateCurrentFunding(projectId, amount)
     };
 
 

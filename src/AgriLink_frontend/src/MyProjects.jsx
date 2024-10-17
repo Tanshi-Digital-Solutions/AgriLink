@@ -33,21 +33,53 @@ const formatDate = (timestamp) => {
   return date.toLocaleDateString();
 };
 
+const truncateText = (text, wordLimit) => {
+  const words = text.split(' ');
+  if (words.length > wordLimit) {
+    return words.slice(0, wordLimit).join(' ') + '...';
+  }
+  return text;
+};
+
 const MyProjectsGrid = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [user, setUser] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [error, setError] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchProjects();
+    fetchUserData();
   }, []);
 
+  useEffect(() => {
+    if (user) {
+      fetchProjects();
+    }
+  }, [user]);
+
+  const fetchUserData = async () => {
+    try {
+      const userResult = await AgriLink_backend.getUser();
+      if ('ok' in userResult) {
+        setUser(userResult.ok);
+      } else {
+        navigate('/login');
+      }
+    } catch (err) {
+      console.error('Error fetching user data:', err);
+      setError('Failed to fetch user data. Please try again.');
+    }
+  };
+
   const fetchProjects = async () => {
+    if (!user) return;
+
     try {
       setLoading(true);
-      const projectsResult = await AgriLink_backend.getUserProjects();
+      const projectsResult = await AgriLink_backend.getUserProjects(user.id);
       const convertedProjects = projectsResult.map(project => ({
         ...project,
         fundingGoal: bigIntToNumber(project.fundingGoal),
@@ -58,6 +90,7 @@ const MyProjectsGrid = () => {
       setProjects(convertedProjects);
     } catch (error) {
       console.error('Error fetching projects:', error);
+      setError('Failed to fetch projects. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -109,33 +142,38 @@ const MyProjectsGrid = () => {
         </aside>
 
         <main className="main-content">
-          <h2>Available Projects</h2>
-          <div className="projects-grid">
-            {projects.map((project) => (
-              <div key={project.id} className="project-card" onClick={() => handleProjectClick(project.id)}>
-                <h3>{project.name}</h3>
-                <p className="project-description">{project.description}</p>
-                <div className="project-details">
-                  <p><strong>Project ID:</strong> {project.id}</p>
-                  <p><DollarSign size={16} /> <strong>Funding Goal:</strong> {project.fundingGoal} ZMW</p>
-                  <p><Calendar size={16} /> <strong>Start Date:</strong> {project.startDate}</p>
-                  <p><Calendar size={16} /> <strong>End Date:</strong> {project.endDate}</p>
-                </div>
-                <div className="project-progress">
-                  <div className="progress-bar">
-                    <div 
-                      className="progress" 
-                      style={{width: `${(project.currentFunding / project.fundingGoal) * 100}%`}}
-                    ></div>
+          <h2>My Projects</h2>
+          {error && <p className="error-message">{error}</p>}
+          {projects.length === 0 ? (
+            <p>You don't have any projects yet.</p>
+          ) : (
+            <div className="projects-grid">
+              {projects.map((project) => (
+                <div key={project.id} className="project-card" onClick={() => handleProjectClick(project.id)}>
+                  <h3>{project.name}</h3>
+                  <p className="project-description">{truncateText(project.description, 35)}</p>
+                  <div className="project-details">
+                    <p><strong>Project ID:</strong> {project.id}</p>
+                    <p><DollarSign size={16} /> <strong>Funding Goal:</strong> {project.fundingGoal} ZMW</p>
+                    <p><Calendar size={16} /> <strong>Start Date:</strong> {project.startDate}</p>
+                    <p><Calendar size={16} /> <strong>End Date:</strong> {project.endDate}</p>
                   </div>
-                  <p>{Math.round((project.currentFunding / project.fundingGoal) * 100)}% funded</p>
+                  <div className="project-progress">
+                    <div className="progress-bar">
+                      <div 
+                        className="progress" 
+                        style={{width: `${(project.currentFunding / project.fundingGoal) * 100}%`}}
+                      ></div>
+                    </div>
+                    <p>{Math.round((project.currentFunding / project.fundingGoal) * 100)}% funded</p>
+                  </div>
+                  <button className="view-details-button">
+                    View Details
+                  </button>
                 </div>
-                <button className="view-details-button">
-                  View Details
-                </button>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </main>
       </div>
     </div>

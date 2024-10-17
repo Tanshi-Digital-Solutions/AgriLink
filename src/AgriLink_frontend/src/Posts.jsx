@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AgriLink_backend } from 'declarations/AgriLink_backend';
 import { Menu, X, Home, Briefcase, FileText, MapPin, Users, DollarSign, Calendar, ThumbsUp, MessageSquare, Share2, User2 } from 'lucide-react';
 import './Posts.scss';
+import Addbutton from './components/Button';
 
 const formatDate = (timestamp) => {
   if (typeof timestamp === 'bigint') {
@@ -83,7 +84,7 @@ const PostsFeed = () => {
             <Link to="/dashboard"><Home size={18} /> Dashboard</Link>
             <Link to="/projects"><Briefcase size={18} /> Projects</Link>
             <Link to="/feed"><FileText size={18} /> Feed</Link>
-            <Link to="/nfts"><MapPin size={18} /> NFTs</Link>
+            <Link to="/land-nfts"><MapPin size={18} /> NFTs</Link>
             <Link to="/contact"><Users size={18} /> Contact Us</Link>
           </nav>
           <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -134,6 +135,7 @@ const PostsFeed = () => {
           </div>
         </main>
       </div>
+    <Addbutton/>
     </div>
   );
 };

@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { AgriLink_backend } from 'declarations/AgriLink_backend';
 import { Menu, X, Home, Briefcase, FileText, MapPin, Users, DollarSign, Calendar } from 'lucide-react';
 import './Projects.scss';
+import AddButton from './components/Button';
 
 const bigIntToNumber = (value) => {
   if (typeof value === 'bigint') {
@@ -33,9 +34,17 @@ const formatDate = (timestamp) => {
   return date.toLocaleDateString();
 };
 
+const truncateText = (text, wordLimit) => {
+  const words = text.split(' ');
+  if (words.length > wordLimit) {
+    return words.slice(0, wordLimit).join(' ') + '...';
+  }
+  return text;
+};
+
 const ProjectsGrid = () => {
   const [projects, setProjects] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
@@ -83,7 +92,7 @@ const ProjectsGrid = () => {
             <Link to="/dashboard"><Home size={18} /> Dashboard</Link>
             <Link to="/projects"><Briefcase size={18} /> Projects</Link>
             <Link to="/feed"><FileText size={18} /> Feed</Link>
-            <Link to="/nfts"><MapPin size={18} /> NFTs</Link>
+            <Link to="/land-nfts"><MapPin size={18} /> NFTs</Link>
             <Link to="/contact"><Users size={18} /> Contact Us</Link>
           </nav>
           <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -96,7 +105,7 @@ const ProjectsGrid = () => {
         <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
           <div className="sidebar-header">
             <h2>AgriLink</h2>
-            <button className="close-sidebar" onClick={() => setSidebarOpen(false)}>
+            <button className="close-sidebar" onClick={() => setSidebarOpen(true)}>
               <X size={24} />
             </button>
           </div>
@@ -114,7 +123,7 @@ const ProjectsGrid = () => {
             {projects.map((project) => (
               <div key={project.id} className="project-card" onClick={() => handleProjectClick(project.id)}>
                 <h3>{project.name}</h3>
-                <p className="project-description">{project.description}</p>
+                <p className="project-description">{truncateText(project.description, 35)}</p>
                 <div className="project-details">
                   <p><strong>Project ID:</strong> {project.id}</p>
                   <p><DollarSign size={16} /> <strong>Funding Goal:</strong> {project.fundingGoal} ZMW</p>
@@ -138,6 +147,7 @@ const ProjectsGrid = () => {
           </div>
         </main>
       </div>
+    <AddButton />
     </div>
   );
 };

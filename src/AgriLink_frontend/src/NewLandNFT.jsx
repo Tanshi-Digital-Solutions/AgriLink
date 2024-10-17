@@ -3,11 +3,15 @@ import { useNavigate, Link } from 'react-router-dom';
 import { AgriLink_backend } from 'declarations/AgriLink_backend';
 import { Menu, X, Home, Briefcase, FileText, MapPin, Users, DollarSign } from 'lucide-react';
 import './NewLandNFT.scss';
+import Header from './components/Header';
+import Sidebar from './components/Sidebar';
 
 const CreateLandNFT = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [formData, setFormData] = useState({
+    name: '',
+    description: '',
     latitude: '',
     longitude: '',
     size: '',
@@ -59,6 +63,8 @@ const CreateLandNFT = () => {
     try {
       const result = await AgriLink_backend.createLandNFT({
         owner: user.id,
+        name: formData.name,
+        description: formData.description,
         location: {
           latitude: parseFloat(formData.latitude),
           longitude: parseFloat(formData.longitude),
@@ -68,7 +74,7 @@ const CreateLandNFT = () => {
 
       if ('ok' in result) {
         setSuccess(result.ok);
-        setFormData({ latitude: '', longitude: '', size: '' });
+        setFormData({ name: '', description: '', latitude: '', longitude: '', size: '' });
       } else {
         setError(result.err);
       }
@@ -82,40 +88,10 @@ const CreateLandNFT = () => {
 
   return (
     <div className="create-land-nft-page">
-      <header className="dashboard-header">
-        <div className="header-content">
-          <button className="menu-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
-            <Menu size={24} />
-          </button>
-          <h1>AgriLink</h1>
-          <nav className={`header-nav ${mobileMenuOpen ? 'open' : ''}`}>
-            <Link to="/dashboard"><Home size={18} /> Dashboard</Link>
-            <Link to="/projects"><Briefcase size={18} /> Projects</Link>
-            <Link to="/feed"><FileText size={18} /> Feed</Link>
-            <Link to="/nfts"><MapPin size={18} /> NFTs</Link>
-            <Link to="/contact"><Users size={18} /> Contact Us</Link>
-          </nav>
-          <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-            {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-      </header>
+      <Header/>
 
       <div className="create-land-nft-content">
-        <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
-          <div className="sidebar-header">
-            <h2>AgriLink</h2>
-            <button className="close-sidebar" onClick={() => setSidebarOpen(false)}>
-              <X size={24} />
-            </button>
-          </div>
-          <nav className="sidebar-nav">
-            <Link to="/dashboard"><Home size={18} /> Dashboard</Link>
-            <Link to="/projects"><Briefcase size={18} /> My Projects</Link>
-            <Link to="/investments"><DollarSign size={18} /> My Investments</Link>
-            <Link to="/land-nfts"><MapPin size={18} /> My Land NFTs</Link>
-          </nav>
-        </aside>
+      <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
         <main className="main-content">
           <h2>Create New Land NFT</h2>
@@ -123,6 +99,27 @@ const CreateLandNFT = () => {
             <p>Creating Land NFT for: {user.name} (ID: {user.id.toString()})</p>
           )}
           <form className="create-land-nft-form" onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="name">Name:</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="description">Description:</label>
+              <textarea
+                id="description"
+                name="description"
+                value={formData.description}
+                onChange={handleInputChange}
+                required
+              />
+            </div>
             <div className="form-group">
               <label htmlFor="latitude">Latitude:</label>
               <input

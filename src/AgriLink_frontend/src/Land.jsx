@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { AgriLink_backend } from 'declarations/AgriLink_backend';
 import { Menu, X, Home, Briefcase, FileText, MapPin, Users, DollarSign, Calendar } from 'lucide-react';
+import landImage from './land.png';
 import './LandNFTs.scss';
+import AddButton from './components/Button';
 
 const formatDate = (timestamp) => {
   if (typeof timestamp === 'bigint') {
@@ -14,64 +16,56 @@ const formatDate = (timestamp) => {
   }
 
   const date = new Date(timestamp);
-
+  
   if (isNaN(date.getTime())) {
     console.error('Invalid date:', timestamp);
     return 'Invalid Date';
   }
-
+  
   return date.toLocaleDateString();
 };
 
-const NFTsGrid = () => {
-  const [nfts, setNFTs] = useState([]);
+const formatStatus = (status) => {
+  if (typeof status === 'object') {
+    // If status is an object, it's likely an enum. Return the key of the object.
+    return Object.keys(status)[0];
+  }
+  return status.toString();
+};
+
+const LandNFTsGrid = () => {
+  const [landNFTs, setLandNFTs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    fetchNFTs();
+    fetchLandNFTs();
   }, []);
 
-  const fetchNFTs = async () => {
+  const fetchLandNFTs = async () => {
     try {
       setLoading(true);
       const nftsResult = await AgriLink_backend.getAllLandNFTs();
-      const convertedNFTs = await Promise.all(nftsResult.map(async (nft) => {
-        let ownerName = 'Unknown';
-        try {
-          const userResult = await AgriLink_backend.getUser(nft.owner);
-          if (userResult.ok) {
-            ownerName = userResult.ok.name;
-          }
-        } catch (error) {
-          console.error('Error fetching user:', error);
-        }
-        return {
-          ...nft,
-          createdAt: formatDate(nft.createdAt),
-          ownerName
-        };
-      }));
-      setNFTs(convertedNFTs);
+      setLandNFTs(nftsResult);
     } catch (error) {
-      console.error('Error fetching NFTs:', error);
+      console.error('Error fetching land NFTs:', error);
     } finally {
       setLoading(false);
     }
   };
 
   const handleNFTClick = (nftId) => {
-    navigate(`/nfts/${nftId}`);
+    navigate(`/land-nfts/${nftId}`);
   };
 
   if (loading) {
-    return <div className="loading">Loading NFTs...</div>;
+    return <div className="loading">Loading land NFTs...</div>;
   }
 
   return (
-    <div className="nfts-page">
+    <div className="land-nfts-page">
       <header className="dashboard-header">
         <div className="header-content">
           <button className="menu-toggle" onClick={() => setSidebarOpen(!sidebarOpen)}>
@@ -82,7 +76,7 @@ const NFTsGrid = () => {
             <Link to="/dashboard"><Home size={18} /> Dashboard</Link>
             <Link to="/projects"><Briefcase size={18} /> Projects</Link>
             <Link to="/feed"><FileText size={18} /> Feed</Link>
-            <Link to="/nfts"><MapPin size={18} /> NFTs</Link>
+            <Link to="/land-nfts"><MapPin size={18} /> Land NFTs</Link>
             <Link to="/contact"><Users size={18} /> Contact Us</Link>
           </nav>
           <button className="mobile-menu-toggle" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
@@ -91,7 +85,7 @@ const NFTsGrid = () => {
         </div>
       </header>
 
-      <div className="nfts-content">
+      <div className="land-nfts-content">
         <aside className={`sidebar ${sidebarOpen ? 'open' : ''}`}>
           <div className="sidebar-header">
             <h2>AgriLink</h2>
@@ -108,17 +102,18 @@ const NFTsGrid = () => {
         </aside>
 
         <main className="main-content">
-          <h2>Land NFTs</h2>
-          <div className="nfts-grid">
-            {nfts.map((nft) => (
-              <div key={nft.id} className="nft-card" onClick={() => handleNFTClick(nft.id)}>
+          <h2>Available Land NFTs</h2>
+          <div className="land-nfts-grid">
+            {landNFTs.map((nft) => (
+              <div key={nft.id} className="land-nft-card" onClick={() => handleNFTClick(nft.id)}>
+                <img src={landImage} alt={nft.name} className="land-nft-image" />
                 <h3>{nft.name}</h3>
-                <p className="nft-description">{nft.description}</p>
-                <div className="nft-details">
+                <p className="land-nft-description">{nft.description}</p>
+                <div className="land-nft-details">
                   <p><strong>NFT ID:</strong> {nft.id}</p>
-                  <p><MapPin size={16} /> <strong>Location:</strong> {nft.location}</p>
-                  <p><Calendar size={16} /> <strong>Created:</strong> {nft.createdAt}</p>
-                  <p><Users size={16} /> <strong>Owner:</strong> {nft.ownerName}</p>
+                  <p><MapPin size={16} /> <strong>Location:</strong> {`${nft.location.latitude}, ${nft.location.longitude}`}</p>
+                  <p><strong>Size:</strong> {nft.size} sq meters</p>
+                  <p><strong>Status:</strong> {formatStatus(nft.status)}</p>
                 </div>
                 <button className="view-details-button">
                   View Details
@@ -128,8 +123,9 @@ const NFTsGrid = () => {
           </div>
         </main>
       </div>
+    <AddButton/>  
     </div>
   );
 };
 
-export default NFTsGrid;
+export default LandNFTsGrid;

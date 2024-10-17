@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AgriLink_backend } from 'declarations/AgriLink_backend';
 import { User, LogOut, Home, Sprout, Menu } from 'lucide-react';
+import Header from './components/Header';
+import Sidebar from './components/Sidebar';
 import './NewProject.scss';
 
 const CreateProject = () => {
@@ -9,6 +11,7 @@ const CreateProject = () => {
   const [description, setDescription] = useState('');
   const [fundingGoal, setFundingGoal] = useState('');
   const [startDate, setStartDate] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const [endDate, setEndDate] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -51,27 +54,10 @@ const CreateProject = () => {
 
   return (
     <div className="create-project">
-      <header className="create-project__header">
-        <div className="logo">AgriLink</div>
-        <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
-          <Menu size={24} />
-        </button>
-        <nav className={`desktop-nav ${mobileMenuOpen ? 'mobile-nav-open' : ''}`}>
-          <a href="/dashboard">Dashboard</a>
-          <a href="/investments">Investments</a>
-          <a href="/projects">Projects</a>
-          <a href="/land-nfts">Land NFTs</a>
-        </nav>
-        <div className="user-menu">
-          <span>John Doe</span>
-          <button className="logout-btn" onClick={handleLogout}>
-            <LogOut size={18} />
-            Logout
-          </button>
-        </div>
-      </header>
-
-      <main className="create-project__main">
+      <Header />
+      <div>
+        <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+        <main className="create-project__main">
         <h1>Create New Project</h1>
         <form onSubmit={handleSubmit} className="create-project-form">
           <div className="form-group">
@@ -130,7 +116,9 @@ const CreateProject = () => {
             {loading ? 'Creating...' : 'Create Project'}
           </button>
         </form>
-      </main>
+        </main>
+      </div>
+      
     </div>
   );
 };
